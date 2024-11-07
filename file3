@@ -1,0 +1,9 @@
+pipeline {
+    agent any {
+        stage('Build') {
+            step {
+                echo 'Hello World'
+            }
+        }
+    }
+}
