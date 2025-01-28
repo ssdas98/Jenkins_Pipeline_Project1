@@ -1,0 +1,45 @@
+pipeline {
+    agent any
+    environment {
+        My_email = 'ssdas181298@gmail.com'
+    }
+    stages {
+        stage('paralle stage') {
+            parallel {
+               stage('greet') {
+                   steps {
+                       sh "echo 'Hello World!'"
+                   }
+               }
+               stage('sleep') {
+                   steps {
+                       sleep time: 10, unit: 'SECONDS'
+                   }
+               }
+            }
+        }
+        stage('build') {
+            steps {
+                sh "mkdir -p build_output && echo 'Building artifacts' > build_output/artifact.txt"
+            }
+        }
+    }
+    post {
+        success {
+            archiveArtifacts artifacts: 'build_output/*', allowEmptyArchive: true
+            emailext (
+                subject: "Build Succeeded!",
+                body: "This build is successful!",
+                to: "${My_email}"
+            )
+        }
+        failure {
+            archiveArtifacts artifacts: 'build_output/*', allowEmptyArchive: true
+            emailext (
+                subject: "Build Failed!",
+                body: "This build has failed!",
+                to: "${My_email}"
+            )
+        }
+    }
+}
